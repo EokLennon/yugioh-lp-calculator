@@ -14,12 +14,14 @@ const LifePoints = ({ from, to, ...props }: LifePointsProps) => {
     <Text
       className='life-points'
       fontWeight={650}
+      display='inline-block'
+      lineHeight='0.75em'
       letterSpacing='5px'
       {...props}
     >
-      <animated.i>
+      <animated.span>
         {val.to(Math.floor)}
-      </animated.i>
+      </animated.span>
     </Text>
   )
 }
