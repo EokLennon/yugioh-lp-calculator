@@ -13,6 +13,7 @@ import {
 import LifePoints from '../LifePoints/LifePoints';
 
 import { HiCog } from 'react-icons/hi';
+import { MdRestartAlt } from 'react-icons/md';
 import { PiPlus, PiMinus, PiImageSquare } from 'react-icons/pi';
 
 type Props = CardProps & {
@@ -71,6 +72,13 @@ const LifePointsCard = ({
     setCurrentLifePoints(newLifePoints);
     setLifePointsToOperate('');
   }, [currentLifePoints, lifePointsToOperate])
+
+  const onResetLifePoints = useCallback(() => {
+    setPrevLifePoints(currentLifePoints);
+    const newLifePoints = 8000;
+    setCurrentLifePoints(newLifePoints);
+    setLifePointsToOperate('');
+  }, [currentLifePoints])
 
   // #region Styles
   // const Height = props.h ?? props.height;
@@ -199,6 +207,15 @@ const LifePointsCard = ({
               aria-label={`Minus LP`}
               disabled={!lifePointsToOperate}
               onClick={onMinusLifePoints}
+              {...IconButtonCss}
+            />
+            <>{console.log(currentLifePoints)}</>
+            <IconButton
+              icon={<MdRestartAlt />}
+              title={`Reset to 8000 LP`}
+              aria-label={`Reset LP`}
+              disabled={currentLifePoints === 8000}
+              onClick={onResetLifePoints}
               {...IconButtonCss}
             />
           </Box>
