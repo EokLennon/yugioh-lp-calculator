@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { 
   Box,
   Card, CardProps, 
@@ -8,22 +8,25 @@ import {
   Input,
   Text, 
   useColorModeValue,
-  useToken
-} from '@chakra-ui/react'
-import LifePoints from '../LifePoints/LifePoints';
+} from '@chakra-ui/react';
+import LifePoints from '@components/LifePoints/LifePoints';
+
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { 
+  selectPlayerCardColor, selectPlayerCardReversed, selectPlayerDeckMaster, selectPlayerImageStatus, selectPlayerLifePoints, selectPlayerName, 
+  setPlayerCurrentLifePoints, setPlayerPrevLifePoints
+} from '@store/game/slice';
 
 import { HiCog } from 'react-icons/hi';
 import { MdRestartAlt } from 'react-icons/md';
 import { PiPlus, PiMinus, PiImageSquare } from 'react-icons/pi';
 
+import { PlayerId } from '@lib/interfaces/general';
+
 type Props = CardProps & {
-  playerNumber: number
-  playerName: string
-  deckmasterName: string
-  deckmasterImg?: string
+  playerNumber: PlayerId
   reversed?: boolean
   hovered?: boolean
-  hideImg?: boolean
   onHover: (v: boolean) => void
   onOpen: (v: boolean) => void
 }
@@ -44,41 +47,46 @@ const ConfigButtonCss = {
 
 const LifePointsCard = ({
   playerNumber,
-  playerName,
-  deckmasterName,
-  deckmasterImg,
-  reversed = false,
   hovered = false,
-  hideImg = false,
   onHover,
   onOpen,
   ...props
 }: Props) => {
-  const [prevLifePoints, setPrevLifePoints] = useState(8000);
-  const [currentLifePoints, setCurrentLifePoints] = useState(8000);
+  const playerName = useAppSelector(selectPlayerName(playerNumber));
+  const deckMaster = useAppSelector(selectPlayerDeckMaster(playerNumber));
+  const showImage = useAppSelector(selectPlayerImageStatus(playerNumber));
+  const reversed = useAppSelector(selectPlayerCardReversed(playerNumber));
+
+  const deckmasterName = useMemo(() => deckMaster?.name ?? '', [deckMaster]);
+  const deckmasterImg = useMemo(() => deckMaster?.card_images[0].image_url_cropped ?? '', [deckMaster]);
+
   const [lifePointsToOperate, setLifePointsToOperate] = useState('');
 
+  const dispatch = useAppDispatch();
+  const { prevLifePoints, currentLifePoints } = useAppSelector((state) => selectPlayerLifePoints(state, playerNumber));
+  const cardColor = useAppSelector(selectPlayerCardColor(playerNumber));
+
   const onAddLifePoints = useCallback(() => {
-    setPrevLifePoints(currentLifePoints);
+    dispatch(setPlayerPrevLifePoints({ player: playerNumber, lifePoints: currentLifePoints }));
     const newLifePoints = currentLifePoints + Number(lifePointsToOperate);
-    setCurrentLifePoints(newLifePoints);
+    dispatch(setPlayerCurrentLifePoints({ player: playerNumber, lifePoints: newLifePoints }));
     setLifePointsToOperate('');
-  }, [currentLifePoints, lifePointsToOperate])
+  }, [currentLifePoints, dispatch, lifePointsToOperate, playerNumber])
 
   const onMinusLifePoints = useCallback(() => {
-    setPrevLifePoints(currentLifePoints);
+    dispatch(setPlayerPrevLifePoints({ player: playerNumber, lifePoints: currentLifePoints }));
     const _newLifePoints = currentLifePoints - Number(lifePointsToOperate);
     const newLifePoints = _newLifePoints < 0 ? 0 : _newLifePoints;
-    setCurrentLifePoints(newLifePoints);
+    dispatch(setPlayerCurrentLifePoints({ player: playerNumber, lifePoints: newLifePoints }));
     setLifePointsToOperate('');
-  }, [currentLifePoints, lifePointsToOperate])
+  }, [currentLifePoints, dispatch, lifePointsToOperate, playerNumber])
 
   const onResetLifePoints = useCallback(() => {
-    setPrevLifePoints(currentLifePoints);
+    dispatch(setPlayerPrevLifePoints({ player: playerNumber, lifePoints: currentLifePoints }));
     const newLifePoints = 8000;
-    setCurrentLifePoints(newLifePoints);
+    dispatch(setPlayerCurrentLifePoints({ player: playerNumber, lifePoints: newLifePoints }));
     setLifePointsToOperate('');
-  }, [currentLifePoints])
+  }, [currentLifePoints, dispatch, playerNumber])
 
   // #region Styles
   // const Height = props.h ?? props.height;
@@ -93,14 +101,9 @@ const LifePointsCard = ({
                                 "dmname dmname"
                                 "lp image"
                                 "calculator image"`;
-  const colorsLight = useToken('colors', ['blue.300', 'red.300', 'green.300', 'purple.300']);
-  const colorsDark = useToken('colors', ['blue.700', 'red.700', 'green.700', 'purple.700']);
 
-  const bg = useColorModeValue(
-    colorsLight[playerNumber - 1],
-    colorsDark[playerNumber - 1]
-  );
-  const bgLost = useColorModeValue('red.700', 'red.1000');
+  const bg = useColorModeValue(`${cardColor}.300`, `${cardColor}.700`);
+  const bgLost = useColorModeValue('red.700', 'red.900');
   const phColor = useColorModeValue('blackAlpha.700', 'whiteAlpha.700');
   const textShadow = useColorModeValue(
     undefined,
@@ -112,7 +115,6 @@ const LifePointsCard = ({
   );
   // #endregion
 
-  
   return (
     <Card 
       borderRadius={0}
@@ -141,7 +143,7 @@ const LifePointsCard = ({
           </Box>
         </GridItem>
         <GridItem area='image'>
-          {(deckmasterImg && !hideImg)
+          {(deckmasterImg && showImage)
             ? <Box 
                 h='100%'
                 display='flex'
@@ -150,7 +152,7 @@ const LifePointsCard = ({
               >
                 <Image src={deckmasterImg} w='130px' h='130px' />
               </Box>
-            : !hideImg ?
+            : showImage ?
               <Box 
                 h='100%'
                 display='flex'
@@ -194,27 +196,29 @@ const LifePointsCard = ({
               _placeholder={{ opacity: 1, color: phColor }}
             />
             <IconButton
+              isRound
               icon={<PiPlus />}
               title={`Plus ${lifePointsToOperate} LP`}
               aria-label={`Plus LP`}
-              disabled={!lifePointsToOperate}
+              isDisabled={!lifePointsToOperate}
               onClick={onAddLifePoints}
               {...IconButtonCss}
             />
             <IconButton
+              isRound
               icon={<PiMinus />}
               title={`Minus ${lifePointsToOperate} LP`}
               aria-label={`Minus LP`}
-              disabled={!lifePointsToOperate}
+              isDisabled={!lifePointsToOperate}
               onClick={onMinusLifePoints}
               {...IconButtonCss}
             />
-            <>{console.log(currentLifePoints)}</>
             <IconButton
+              isRound
               icon={<MdRestartAlt />}
               title={`Reset to 8000 LP`}
               aria-label={`Reset LP`}
-              disabled={currentLifePoints === 8000}
+              isDisabled={currentLifePoints === 8000}
               onClick={onResetLifePoints}
               {...IconButtonCss}
             />
@@ -229,6 +233,7 @@ const LifePointsCard = ({
         right={!reversed ? '5px' : undefined}
       >
         <IconButton
+          isRound
           icon={<HiCog />}
           title={`Edit Player information`}
           aria-label={`Edit player ${playerNumber} information`}

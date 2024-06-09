@@ -2,7 +2,13 @@ import { Box, IconButton, Text } from '@chakra-ui/react';
 
 import { FaDiscord, FaYoutube } from 'react-icons/fa';
 
-const IconButtonCss = {
+const BoxStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  paddingY: 3
+}
+
+const IconButtonStyle = {
   size: 'sm',
   fontSize: 'lg',
   variant: 'ghost',
@@ -11,14 +17,9 @@ const IconButtonCss = {
 
 const Footer = () => {
   return (
-    <Box 
-      as='footer'
-      display='flex'
-      alignItems='center'
-      paddingY={3}
-    >
+    <Box as='footer' {...BoxStyle}>
       <Text fontSize='md' flexGrow={1}>
-        &copy; 2023 Arturo Lennon.
+        &copy; 2024 Arturo Lennon.
       </Text>
       <IconButton
         as='a'
@@ -27,7 +28,7 @@ const Footer = () => {
         icon={<FaYoutube />}
         title='My YouTube Channel'
         aria-label={`Go to my YouTube channel`}
-        {...IconButtonCss}
+        {...IconButtonStyle}
       />
       <IconButton
         as='a'
@@ -36,7 +37,7 @@ const Footer = () => {
         icon={<FaDiscord />}
         title='Domain Format Discord Server'
         aria-label={`Go to Discord`}
-        {...IconButtonCss}
+        {...IconButtonStyle}
       />
     </Box>
   )

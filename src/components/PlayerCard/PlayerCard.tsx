@@ -1,62 +1,42 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+
 import { ScaleFade } from '@chakra-ui/react';
 import ReactCardFlip, { ReactFlipCardProps } from 'react-card-flip';
-import LifePointsCard from './LifePointsCard';
-import EditPlayerInfoCard from './EditPlayerInfoCard';
+import LifePointsCard from '@components/PlayerCard/LifePointsCard';
+import EditPlayerInfoCard from '@components/PlayerCard/EditPlayerInfoCard';
 
-import ICard from '../../interfaces/card';
+import { PlayerId } from '@lib/interfaces/general';
 
 type PlayerCardProps = Omit<ReactFlipCardProps, 'children'> & {
-  playerNumber: number
-  onSearch: (playerNumber: number) => void
-  deckMaster?: ICard
+  playerNumber: PlayerId
   show?: boolean
 }
 
 const Height = '220px';
 
-const PlayerCard = ({ playerNumber, onSearch, deckMaster, show, ...props }: PlayerCardProps) => {
-  const defaultReversed = useMemo(() => playerNumber % 2 === 0, [playerNumber])
+const PlayerCard = ({ playerNumber, show, ...props }: PlayerCardProps) => {
   const [flipped, setFlipped] = useState(false);
   const [hovering, setHovering] = useState(false);
-  const [reversed, setReversed] = useState(defaultReversed);
-  const [hideImage, setHideImage] = useState(true);
-
-  const [playerName, setPlayerName] = useState(`Player ${playerNumber}`);
-  const dmName = useMemo(() => deckMaster?.name ?? '', [deckMaster]);
-  const dmImg = useMemo(() => deckMaster?.card_images[0].image_url_cropped ?? '', [deckMaster]);
 
   return (
     <ScaleFade 
       in={show} 
       initialScale={0.8} 
-      onAnimationStart={console.log}
-      onAnimationEnd={console.log}
+      onAnimationStart={() => {}}
+      onAnimationEnd={() => {}}
     >
       <ReactCardFlip isFlipped={flipped} flipDirection='horizontal' {...props}>
         <LifePointsCard
           h={Height}
           playerNumber={playerNumber}
-          playerName={playerName}
-          deckmasterName={dmName}
-          deckmasterImg={dmImg}
-          reversed={reversed}
           hovered={hovering}
-          hideImg={hideImage}
-          onOpen={() => setFlipped(true)}
           onHover={setHovering}
+          onOpen={() => setFlipped(true)}
         />
         <EditPlayerInfoCard
           h={Height}
-          playerName={playerName}
-          deckmasterName={dmName}
-          reversed={reversed}
-          hideImg={hideImage}
+          playerNumber={playerNumber}
           onClose={() => setFlipped(false)}
-          onEditPlayerName={setPlayerName}
-          onSelectDeckmaster={() => onSearch(playerNumber)}
-          onReverse={setReversed}
-          onHideImage={setHideImage}
         />
       </ReactCardFlip>
     </ScaleFade>

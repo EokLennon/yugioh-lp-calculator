@@ -1,25 +1,19 @@
-import { ChakraProvider, Container } from '@chakra-ui/react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
-import Header from './containers/Header/Header';
-import MainContent from './containers/MainContent/MainContent';
-import Footer from './containers/Footer/Footer';
+import ScreenLayout from '@screens/Layout/Layout';
+import GameCalculator from '@screens/GameCalculator/GameCalculator';
 
-import theme from './theme/theme';
+import { ROUTES } from '@lib/helpers/constants';
+import CardSearching from '@screens/CardSearch/CardSearch';
 
 const App = () => (
-  <ChakraProvider theme={theme}>
-    <Container 
-      maxWidth='750px'
-      height='100vh'
-      paddingX={3}
-      display='flex'
-      flexDirection='column'
-    >
-      <Header />
-      <MainContent flexGrow={1} />
-      <Footer />
-    </Container>
-  </ChakraProvider>
+  <Routes>
+    <Route path={ROUTES.ROOT} element={<Navigate to={ROUTES.CALCULATOR} replace />} />
+    <Route element={<ScreenLayout />}>
+      <Route path={ROUTES.CALCULATOR} element={<GameCalculator flexGrow={1} />} />
+      <Route path={ROUTES.CARD_VIEWER} element={<CardSearching flexGrow={1} />} />
+    </Route>
+  </Routes>
 )
 
 export default App;

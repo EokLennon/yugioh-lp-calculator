@@ -1,40 +1,33 @@
 import { useCallback, useState } from 'react';
-import useNumberOfPlayers from '../../hooks/useNumberOfPlayers';
+
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { selectActiveCard, selectNumOfPlayers, setActiveCard, setPlayerDeckMaster } from '@store/game/slice';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDeckMasters } from '../../api/cards';
+import { getDeckMasters } from '@api/cards';
 
 import { 
   Box, BoxProps, 
   Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, 
   Input, InputGroup, InputLeftAddon, 
   SimpleGrid, Stack,
-  Button, Skeleton,
-  Radio,
-  RadioGroup
+  Button, 
+  Radio, RadioGroup,
+  Skeleton,
 } from '@chakra-ui/react';
-import PlayerCard from '../../components/PlayerCard/PlayerCard';
+import PlayerCard from '@components/PlayerCard/PlayerCard';
 
-import ICard from '../../interfaces/card';
+import ICard from '@lib/interfaces/card';
+import { PlayerId } from '@lib/interfaces/general';
 
-interface IDeckMasters {
-  [key: number]: ICard | undefined
-}
-
-const MainContent = (props: BoxProps) => {
+const GameCalculator = (props: BoxProps) => {
   const queryClient = useQueryClient();
-  const { players } = useNumberOfPlayers();
+  const dispatch = useAppDispatch();
+  const players = useAppSelector(selectNumOfPlayers);
+  const activeCard = useAppSelector(selectActiveCard);
   
-  const [activeCard, setActiveCard] = useState(0);
   const [search, setSearch] = useState('');
-
   const [selectedDeckMaster, setSelectedDeckMaster] = useState<ICard>();
-  const [deckMasters, setDeckMasters] = useState<IDeckMasters>({
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined
-  });
 
   const { data = [], isFetching } = useQuery<ICard[]>(
     ['get-deckmasters', activeCard, search],
@@ -48,17 +41,27 @@ const MainContent = (props: BoxProps) => {
     }
   );
 
-  const onCloseModal = useCallback(() => setActiveCard(0), []);
+  const onCleanModal = useCallback(() => {
+    setSearch('');
+    queryClient.invalidateQueries({ queryKey: ['get-deckmasters'] });
+  }, [queryClient])
+
+  const onCloseModal = useCallback(() => {
+    dispatch(setActiveCard(0));
+    onCleanModal();
+  }, [dispatch, onCleanModal])
+
   const onSaveModal = useCallback((activeCard: number) => {
     if (activeCard && selectedDeckMaster) {
-      setDeckMasters((prev) => ({
-        ...prev,
-        [activeCard]: selectedDeckMaster
+      dispatch(setPlayerDeckMaster({ 
+        player: activeCard as PlayerId, 
+        deckmaster: selectedDeckMaster 
       }));
       setSelectedDeckMaster(undefined);
     }
-    setActiveCard(0);
-  }, [selectedDeckMaster])
+    dispatch(setActiveCard(0));
+    onCleanModal();
+  }, [dispatch, onCleanModal, selectedDeckMaster])
 
   return (
     <Box 
@@ -69,14 +72,8 @@ const MainContent = (props: BoxProps) => {
         {[...Array(4)].map((i, k) => 
           <PlayerCard
             key={k}
-            playerNumber={k + 1}
-            deckMaster={deckMasters[k + 1]}
+            playerNumber={k + 1 as PlayerId}
             show={players >= (k + 1)}
-            onSearch={(p) => {
-              setSearch('');
-              queryClient.invalidateQueries({ queryKey: ['get-deckmasters'] });
-              setActiveCard(p);
-            }}
           />
         )}
       </SimpleGrid>
@@ -90,12 +87,17 @@ const MainContent = (props: BoxProps) => {
           <ModalBody pb={6}>
             <InputGroup size='sm' mb={(isFetching || (data.length > 0 && search)) ? 5 : undefined}>
               <InputLeftAddon children='Name' />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Input 
+                autoComplete='off' 
+                autoCorrect='off'
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)} 
+              />
             </InputGroup>
             <Stack>
               {isFetching && [...Array(5)].map((i, k) => 
-                <Skeleton>
-                  <Radio key={`${k}`}>Placeholder</Radio>
+                <Skeleton key={`${k}`}>
+                  <Radio>Placeholder</Radio>
                 </Skeleton>
               )}
               {!isFetching && 
@@ -132,4 +134,4 @@ const MainContent = (props: BoxProps) => {
   )
 }
 
-export default MainContent;
+export default GameCalculator;
