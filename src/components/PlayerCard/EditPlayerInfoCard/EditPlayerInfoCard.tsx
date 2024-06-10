@@ -13,20 +13,13 @@ import {
   setActiveCard, setPlayerCardColor, setPlayerCardReversed, setPlayerImageStatus, setPlayerName 
 } from '@store/game/slice';
 
+import { GeneralStackStyle, CardDirectionStyles, NameConfigStyles, DeckMasterConfigStyles } from './styles';
 import { PiArrowLeft, PiArrowRight } from 'react-icons/pi';
 
 import { CardColors, PlayerId } from '@lib/interfaces/general';
-
 type Props = CardProps & {
   playerNumber: PlayerId
   onClose: () => void
-}
-
-const IconButtonCss = {
-  size: 'xs',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current',
 }
 
 const EditPlayerInfoCard = ({
@@ -45,17 +38,17 @@ const EditPlayerInfoCard = ({
 
   return (
     <Card {...props}>
-      <Stack as={CardBody} p={3} spacing={2}>
-        <InputGroup size='sm'>
+      <Stack as={CardBody} {...GeneralStackStyle}>
+        <InputGroup {...NameConfigStyles.InputGroup}>
           <InputLeftAddon children='Player Name' />
           <Input value={name} onChange={(e) => dispatch(setPlayerName({ player: playerNumber, name: e.target.value }))} />
         </InputGroup>
 
-        <InputGroup size='sm'>
+        <InputGroup {...DeckMasterConfigStyles.InputGroup}>
           <InputLeftAddon children='Deck Master' />
-          <Input value={deckmasterName} placeholder='Not selected' pr='3.6rem' textOverflow='ellipsis' readOnly />
-          <InputRightElement w='3.5rem'>
-            <Button h='1.4rem' size='xs' onClick={() => dispatch(setActiveCard(playerNumber))}>
+          <Input {...DeckMasterConfigStyles.Input} value={deckmasterName} placeholder='Not selected' readOnly />
+          <InputRightElement {...DeckMasterConfigStyles.InputRightElement}>
+            <Button {...DeckMasterConfigStyles.Button} onClick={() => dispatch(setActiveCard(playerNumber))}>
               Select
             </Button>
           </InputRightElement>
@@ -74,35 +67,30 @@ const EditPlayerInfoCard = ({
             <option value='purple'>Purple</option>
             <option value='pink'>Pink</option>
           </Select>
-          {/* <Input value={playerName} onChange={(e) => onEditPlayerName(e.target.value)} /> */}
         </InputGroup>
 
-        <HStack>
-          <Button
-            variant='ghost'
-            size='sm'
-            colorScheme={showImage ? 'red' : 'green'}
-            onClick={() => dispatch(setPlayerImageStatus({ player: playerNumber, status: !showImage }))}
-          >
-            {showImage ? 'Hide Image' : 'Show Image'}
-          </Button>
-          <ButtonGroup size='sm' alignItems='center'>
+        <HStack {...CardDirectionStyles.Stack}>
+          <ButtonGroup {...CardDirectionStyles.ButtonGroup}>
+            <Text fontSize='sm'>Image Direction</Text>
             <IconButton
-              {...IconButtonCss}
-              color={!reversed ? 'green.500' : undefined}
+              {...CardDirectionStyles.IconButton(reversed)}
               icon={<PiArrowLeft />}
               aria-label='Set direction to left'
               onClick={() => dispatch(setPlayerCardReversed({ player: playerNumber, reversed: false }))}
             />
-            <Text fontSize='sm'>Image Direction</Text>
             <IconButton
-              {...IconButtonCss}
-              color={reversed ? 'green.500' : undefined}
+              {...CardDirectionStyles.IconButton(reversed)}
               icon={<PiArrowRight />}
               aria-label='Set direction to right'
               onClick={() => dispatch(setPlayerCardReversed({ player: playerNumber, reversed: true }))}
             />
           </ButtonGroup>
+          <Button
+            onClick={() => dispatch(setPlayerImageStatus({ player: playerNumber, status: !showImage }))}
+            {...CardDirectionStyles.Button(showImage)}
+          >
+            {showImage ? 'Hide Image' : 'Show Image'}
+          </Button>
         </HStack>
 
         <HStack justify='end'>

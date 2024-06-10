@@ -1,28 +1,18 @@
 import { 
-  Box, BoxProps as IBoxProps,
+  Box, BoxProps,
   IconButton
 } from '@chakra-ui/react';
+
+import { BoxStyle, IconButtonStyle } from './styles';
 import { 
   PiUser, PiUserFill,
   PiUsers, PiUsersFill,
   PiUsersFour, PiUsersFourFill,
 } from 'react-icons/pi';
 
-type BoxProps = Omit<IBoxProps, 'aria-label'>;
-type Props = BoxProps & {
+type Props = Omit<BoxProps, 'aria-label'> & {
   players: number
   onSetPlayers: (n: number) => void
-}
-
-const BoxStyle = {
-  display: 'flex'
-}
-
-const IconButtonStyle = {
-  size: 'md',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current'
 }
 
 const NumberOfPlayersSwitcher: React.FC<Props> = ({
@@ -30,7 +20,6 @@ const NumberOfPlayersSwitcher: React.FC<Props> = ({
   onSetPlayers,
   ...props
 }) => {
-  
   return (
     <Box {...BoxStyle} {...props}>
       <IconButton

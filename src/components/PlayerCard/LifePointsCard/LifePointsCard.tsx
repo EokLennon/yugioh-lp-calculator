@@ -7,16 +7,16 @@ import {
   Image, 
   Input,
   Text, 
-  useColorModeValue,
 } from '@chakra-ui/react';
 import LifePoints from '@components/LifePoints/LifePoints';
 
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { 
-  selectPlayerCardColor, selectPlayerCardReversed, selectPlayerDeckMaster, selectPlayerImageStatus, selectPlayerLifePoints, selectPlayerName, 
+  selectPlayerCardReversed, selectPlayerDeckMaster, selectPlayerImageStatus, selectPlayerLifePoints, selectPlayerName, 
   setPlayerCurrentLifePoints, setPlayerPrevLifePoints
 } from '@store/game/slice';
 
+import { CalculatorGridStyles, CardStyles, ConfigSwitchStyles, DmNameGridStyles, GridStyles, ImageGridStyles, LifePointsGridStyles, NameGridStyles } from './styles';
 import { HiCog } from 'react-icons/hi';
 import { MdRestartAlt } from 'react-icons/md';
 import { PiPlus, PiMinus, PiImageSquare } from 'react-icons/pi';
@@ -31,20 +31,6 @@ type Props = CardProps & {
   onOpen: (v: boolean) => void
 }
 
-const IconButtonCss = {
-  size: 'xs',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current',
-}
-
-const ConfigButtonCss = {
-  size: 'xs',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current',
-}
-
 const LifePointsCard = ({
   playerNumber,
   hovered = false,
@@ -52,19 +38,17 @@ const LifePointsCard = ({
   onOpen,
   ...props
 }: Props) => {
+  const dispatch = useAppDispatch();
   const playerName = useAppSelector(selectPlayerName(playerNumber));
   const deckMaster = useAppSelector(selectPlayerDeckMaster(playerNumber));
   const showImage = useAppSelector(selectPlayerImageStatus(playerNumber));
   const reversed = useAppSelector(selectPlayerCardReversed(playerNumber));
+  const { prevLifePoints, currentLifePoints } = useAppSelector((state) => selectPlayerLifePoints(state, playerNumber));
 
   const deckmasterName = useMemo(() => deckMaster?.name ?? '', [deckMaster]);
   const deckmasterImg = useMemo(() => deckMaster?.card_images[0].image_url_cropped ?? '', [deckMaster]);
 
   const [lifePointsToOperate, setLifePointsToOperate] = useState('');
-
-  const dispatch = useAppDispatch();
-  const { prevLifePoints, currentLifePoints } = useAppSelector((state) => selectPlayerLifePoints(state, playerNumber));
-  const cardColor = useAppSelector(selectPlayerCardColor(playerNumber));
 
   const onAddLifePoints = useCallback(() => {
     dispatch(setPlayerPrevLifePoints({ player: playerNumber, lifePoints: currentLifePoints }));
@@ -88,103 +72,50 @@ const LifePointsCard = ({
     setLifePointsToOperate('');
   }, [currentLifePoints, dispatch, playerNumber])
 
-  // #region Styles
-  // const Height = props.h ?? props.height;
-  const Columns = `150px 1fr`;
-  const ReverseColumns = `1fr 150px`;
-  const Rows = '1fr 1fr 118px 30px';
-  const TemplateAreas = `"name name"
-                         "dmname dmname"
-                         "image lp"
-                         "image calculator"`;
-  const ReverseTemplateAreas = `"name name"
-                                "dmname dmname"
-                                "lp image"
-                                "calculator image"`;
-
-  const bg = useColorModeValue(`${cardColor}.300`, `${cardColor}.700`);
-  const bgLost = useColorModeValue('red.700', 'red.900');
-  const phColor = useColorModeValue('blackAlpha.700', 'whiteAlpha.700');
-  const textShadow = useColorModeValue(
-    undefined,
-    `0 2px black`
-  );
-  const outline = useColorModeValue(
-    `dashed 3px black`,
-    `dashed 3px white`
-  );
-  // #endregion
-
   return (
     <Card 
-      borderRadius={0}
-      bg={currentLifePoints === 0 ? bgLost : bg}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
+      {...CardStyles(currentLifePoints, playerNumber)}
       {...props}
     >
-      <Grid 
-        h='100%'
-        templateAreas={reversed ? ReverseTemplateAreas : TemplateAreas}
-        templateColumns={reversed ? ReverseColumns : Columns}
-        templateRows={Rows}
-        columnGap='8px'
-      >
-        <GridItem area='name'>
-          <Box px='8px' textAlign={reversed ? 'right' : undefined} textShadow={textShadow}>
-            <Text fontSize='28px' fontWeight={700}>{playerName}</Text>
+      <Grid {...GridStyles(reversed)}>
+        <GridItem {...NameGridStyles.GridItem}>
+          <Box {...NameGridStyles.Box(reversed)}>
+            <Text {...NameGridStyles.Text}>{playerName}</Text>
           </Box>
         </GridItem>
-        <GridItem area='dmname'>
-          <Box px='8px' textAlign={reversed ? 'right' : undefined} textShadow={textShadow}>
-            <Text fontSize='20px' fontWeight={600}>
+        <GridItem {...DmNameGridStyles.GridItem}>
+          <Box {...DmNameGridStyles.Box(reversed)}>
+            <Text {...DmNameGridStyles.Text}>
               {deckmasterName || 'Not selected'}
             </Text>
           </Box>
         </GridItem>
-        <GridItem area='image'>
+        <GridItem {...ImageGridStyles.GridItem}>
           {(deckmasterImg && showImage)
-            ? <Box 
-                h='100%'
-                display='flex'
-                justifyContent='center'
-                alignItems='center'
-              >
-                <Image src={deckmasterImg} w='130px' h='130px' />
+            ? <Box {...ImageGridStyles.ImageBox}>
+                <Image {...ImageGridStyles.Image} src={deckmasterImg}  />
               </Box>
-            : showImage ?
-              <Box 
-                h='100%'
-                display='flex'
-                justifyContent='center'
-                alignItems='center'
-                outline={outline}
-                outlineOffset='-12px'
-              >
-                <PiImageSquare fontSize='xxx-large' />
-              </Box>
-            : <></>
+            : showImage 
+              ? <Box {...ImageGridStyles.NoImageBox()}>
+                  <PiImageSquare {...ImageGridStyles.NoImage} />
+                </Box>
+              : <></>
           }
         </GridItem>
-        <GridItem area='lp'>
-          <Box
-            h='100%'
-            display='flex'
-            justifyContent='center'
-            alignItems='center'
-          >
+        <GridItem {...LifePointsGridStyles.GridItem}>
+          <Box {...LifePointsGridStyles.Box}>
             <LifePoints 
-              fontSize='54px'
-              textShadow={textShadow}
+              {...LifePointsGridStyles.Text()}
               from={prevLifePoints}
               to={currentLifePoints}
             />
           </Box>
         </GridItem>
-        <GridItem area='calculator'>
-          <Box display='flex' px='8px'>
+        <GridItem {...CalculatorGridStyles.GridItem}>
+          <Box {...CalculatorGridStyles.Box}>
             <Input
-              variant='unstyled'
               placeholder='Life Points'
               maxLength={6}
               value={lifePointsToOperate}
@@ -193,52 +124,42 @@ const LifePointsCard = ({
                 if (!numeric.test(e.key)) e.preventDefault();
               }}
               onChange={(e) => setLifePointsToOperate(e.target.value)}
-              _placeholder={{ opacity: 1, color: phColor }}
+              {...CalculatorGridStyles.Input()}
             />
             <IconButton
-              isRound
               icon={<PiPlus />}
               title={`Plus ${lifePointsToOperate} LP`}
               aria-label={`Plus LP`}
               isDisabled={!lifePointsToOperate}
               onClick={onAddLifePoints}
-              {...IconButtonCss}
+              {...CalculatorGridStyles.IconButton}
             />
             <IconButton
-              isRound
               icon={<PiMinus />}
               title={`Minus ${lifePointsToOperate} LP`}
               aria-label={`Minus LP`}
               isDisabled={!lifePointsToOperate}
               onClick={onMinusLifePoints}
-              {...IconButtonCss}
+              {...CalculatorGridStyles.IconButton}
             />
             <IconButton
-              isRound
               icon={<MdRestartAlt />}
               title={`Reset to 8000 LP`}
               aria-label={`Reset LP`}
               isDisabled={currentLifePoints === 8000}
               onClick={onResetLifePoints}
-              {...IconButtonCss}
+              {...CalculatorGridStyles.IconButton}
             />
           </Box>
         </GridItem>
       </Grid>
-      <Box 
-        display={hovered ? 'block' : 'none'}
-        position='absolute'
-        top='5px'
-        left={reversed ? '5px' : undefined}
-        right={!reversed ? '5px' : undefined}
-      >
+      <Box {...ConfigSwitchStyles.Box(hovered, reversed)}>
         <IconButton
-          isRound
           icon={<HiCog />}
           title={`Edit Player information`}
           aria-label={`Edit player ${playerNumber} information`}
           onClick={() => onOpen(true)}
-          {...ConfigButtonCss}
+          {...ConfigSwitchStyles.IconButton}
         />
       </Box>
     </Card>

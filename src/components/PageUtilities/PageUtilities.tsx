@@ -1,26 +1,17 @@
-import { 
-  Box, BoxProps as IBoxProps,
-  IconButton,
-} from '@chakra-ui/react';
+import { Box, BoxProps, IconButton } from '@chakra-ui/react';
 import ColorModeSwitcher from '@components/ColorModeSwitcher/ColorModeSwitcher';
 
 import { ROUTES } from '@lib/helpers/constants';
 
+import { IconButtonStyle } from './styles';
 import { PiCalculator, PiCalculatorFill } from 'react-icons/pi';
 import { TbSearch, TbListSearch } from 'react-icons/tb';
 
-type BoxProps = Omit<IBoxProps, 'aria-label'>;
-type Props = BoxProps & {
+type Props = Omit<BoxProps, 'aria-label'> & {
   pathname: string,
   goTo: (route: string) => void
 }
 
-const IconButtonStyle = {
-  size: 'md',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current'
-}
 
 const PageUtilities: React.FC<Props> = ({
   pathname,

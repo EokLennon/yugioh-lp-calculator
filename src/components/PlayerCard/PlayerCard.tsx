@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import { ScaleFade } from '@chakra-ui/react';
 import ReactCardFlip, { ReactFlipCardProps } from 'react-card-flip';
-import LifePointsCard from '@components/PlayerCard/LifePointsCard';
-import EditPlayerInfoCard from '@components/PlayerCard/EditPlayerInfoCard';
+import LifePointsCard from '@components/PlayerCard/LifePointsCard/LifePointsCard';
+import EditPlayerInfoCard from '@components/PlayerCard/EditPlayerInfoCard/EditPlayerInfoCard';
 
 import { PlayerId } from '@lib/interfaces/general';
 
@@ -22,8 +22,6 @@ const PlayerCard = ({ playerNumber, show, ...props }: PlayerCardProps) => {
     <ScaleFade 
       in={show} 
       initialScale={0.8} 
-      onAnimationStart={() => {}}
-      onAnimationEnd={() => {}}
     >
       <ReactCardFlip isFlipped={flipped} flipDirection='horizontal' {...props}>
         <LifePointsCard
