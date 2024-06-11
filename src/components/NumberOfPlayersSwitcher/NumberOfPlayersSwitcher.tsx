@@ -1,52 +1,47 @@
 import { 
-  Box, BoxProps as IBoxProps,
+  Box, BoxProps,
   IconButton
 } from '@chakra-ui/react';
+
+import { BoxStyle, IconButtonStyle } from './styles';
 import { 
   PiUser, PiUserFill,
   PiUsers, PiUsersFill,
   PiUsersFour, PiUsersFourFill,
 } from 'react-icons/pi';
-import useNumberOfPlayers from '../../hooks/useNumberOfPlayers';
 
-type BoxProps = Omit<IBoxProps, 'aria-label'>;
-
-const IconButtonProps = {
-  size: 'md',
-  fontSize: 'lg',
-  variant: 'ghost',
-  color: 'current'
+type Props = Omit<BoxProps, 'aria-label'> & {
+  players: number
+  onSetPlayers: (n: number) => void
 }
 
-const NumberOfPlayersSwitcher: React.FC<BoxProps> = (props) => {
-  const { players, setPlayers } = useNumberOfPlayers();
-  
+const NumberOfPlayersSwitcher: React.FC<Props> = ({
+  players,
+  onSetPlayers,
+  ...props
+}) => {
   return (
-    <Box
-      className='component-btn-group'
-      display='flex'
-      {...props}
-    >
+    <Box {...BoxStyle} {...props}>
       <IconButton
-        onClick={() => setPlayers(1)}
+        onClick={() => onSetPlayers(1)}
         icon={players === 1 ? <PiUserFill /> : <PiUser />}
         title='One-Player mode'
         aria-label={`Switch to One-Player mode`}
-        {...IconButtonProps}
+        {...IconButtonStyle}
       />
       <IconButton
-        onClick={() => setPlayers(2)}
+        onClick={() => onSetPlayers(2)}
         icon={players === 2 ? <PiUsersFill /> : <PiUsers />}
         title='Two-Player mode'
         aria-label={`Switch to Two-Player mode`}
-        {...IconButtonProps}
+        {...IconButtonStyle}
       />
       <IconButton
-        onClick={() => setPlayers(4)}
+        onClick={() => onSetPlayers(4)}
         icon={players === 4 ? <PiUsersFourFill /> : <PiUsersFour />}
         title='Four-Player mode'
         aria-label={`Switch to Four-Player mode`}
-        {...IconButtonProps}
+        {...IconButtonStyle}
       />
     </Box>
   )
