@@ -1,16 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCards } from '@api/cards';
+import { domainTextDb } from '@assets/DomainCardText';
 
 import { 
-  Fade, Box, BoxProps, VStack, HStack,
-  Heading, Spinner, Avatar,
-  Tag, TagLabel,
+  Fade, Box, BoxProps,
+  SimpleGrid, Wrap,
+  Heading, Text, Spinner, Image,
   Input, InputGroup, InputLeftAddon, InputRightElement, Button,
-  Image,
+  Tabs, TabList, Tab, TabPanels, TabPanel,
   useOutsideClick,
 } from '@chakra-ui/react';
+import { AtkDefStat, AttributeStat, LevelRankLinkStat, TypeStat, TypingStat } from '@components/CardStats/CardStats';
 
 import { CardViewStyle, SearchStyle } from './styles';
 
@@ -27,6 +29,7 @@ const CardSearching = (props: BoxProps) => {
 
   const [search, setSearch] = useState('');
   const [selectedCard, setSelectedCard] = useState<ICard>();
+  const [selectedCardDomainText, setSelectedCardDomainText] = useState<string>();
 
   const { data = [], isFetching } = useQuery<ICard[]>(
     ['get-cards', search],
@@ -39,6 +42,14 @@ const CardSearching = (props: BoxProps) => {
       refetchOnWindowFocus: false,
     }
   )
+
+  useEffect(() => {
+    if (!selectedCard) return;
+    const domain = domainTextDb.find((d) => d.cardId === selectedCard.id);
+    console.log(domain?.cardId, selectedCard.id);
+    
+    setSelectedCardDomainText(domain?.domainText);
+  }, [selectedCard])
 
   return (
     <Box as='main' {...props}>
@@ -69,27 +80,64 @@ const CardSearching = (props: BoxProps) => {
         </Box>
       </Fade>
       {selectedCard &&
-        <HStack {...CardViewStyle.HStack}>
+        <SimpleGrid columns={[1, null, 2]} spacing='1rem' {...CardViewStyle.SimpleGrid}>
           <Image 
             {...CardViewStyle.Image}
             src={selectedCard.card_images[0].image_url} 
             alt={selectedCard.name}
           />
-          <VStack>
+          <Box>
             <Heading as='h1' {...CardViewStyle.Heading}>{selectedCard.name}</Heading>
-            <HStack>
-              <Tag size='lg' borderRadius='full'>
-                <Avatar
-                  src='stats/Level.svg'
-                  size='xs'
-                  ml={-1}
-                  mr={2}
-                />
-                <TagLabel>{selectedCard.level}</TagLabel>
-              </Tag>
-            </HStack>
-          </VStack>
-        </HStack>
+            <Wrap mb='1rem'>
+              <TypeStat 
+                frame={selectedCard.frameType}
+                type={selectedCard.type}
+                withWrap
+              />
+              <AttributeStat 
+                frame={selectedCard.frameType}
+                attribute={selectedCard.attribute || ''} 
+                withWrap
+              />
+              <LevelRankLinkStat
+                frame={selectedCard.frameType}
+                content={`${selectedCard.level}`}
+                linkRating={selectedCard.linkval}
+                linkMarkers={selectedCard.linkmarkers}
+                withWrap
+              />
+              <TypingStat 
+                frame={selectedCard.frameType}
+                race={selectedCard.race}
+                withWrap
+              />
+              <AtkDefStat
+                mode='atk'
+                value={selectedCard.atk}
+                withWrap
+              />
+              <AtkDefStat 
+                mode='def'
+                value={selectedCard.def}
+                withWrap
+              />
+            </Wrap>
+            <Tabs variant='enclosed'>
+              <TabList>
+                <Tab>Card Text</Tab>
+                <Tab isDisabled={Boolean(!selectedCardDomainText)}>Domain Card Text</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <Text whiteSpace='pre-line'>{selectedCard.desc}</Text>
+                </TabPanel>
+                <TabPanel>
+                  <Text whiteSpace='pre-line'>{selectedCardDomainText}</Text>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </SimpleGrid>
       }
     </Box>
   )

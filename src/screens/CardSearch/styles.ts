@@ -1,4 +1,4 @@
-import { BoxProps, HeadingProps, ImageProps, SpinnerProps, StackProps, useColorModeValue } from "@chakra-ui/react";
+import { BoxProps, HeadingProps, ImageProps, SimpleGridProps, SpinnerProps, useColorModeValue } from "@chakra-ui/react";
 
 type SearchStyleI = {
   Spinner: Partial<SpinnerProps>
@@ -26,21 +26,20 @@ export const SearchStyle: SearchStyleI = {
 }
 
 type CardViewStyleI = {
-  HStack: Partial<StackProps>
+  SimpleGrid: Partial<SimpleGridProps>
   Image: Partial<ImageProps>
   Heading: Partial<HeadingProps>
 }
 export const CardViewStyle: CardViewStyleI = {
-  HStack: {
+  SimpleGrid: {
     mt: '20px',
-    gap: '16px',
-    alignItems: 'flex-start'
   },
   Image: {
     width: '350px',
     height: 'auto'
   },
   Heading: {
+    mb: '1rem',
     size: 'md'
   }
 }

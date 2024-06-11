@@ -17,9 +17,9 @@ const ScreenLayout = () => {
       flexDirection='column' 
       {...ContainerStyle}
     >
-      <Header />
+      <Header  />
       <Outlet />
-      <Footer />
+      <Footer  />
     </Container>
   )
 }

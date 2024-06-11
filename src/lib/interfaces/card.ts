@@ -2,6 +2,7 @@ interface Card {
   id: number | string
   name: string
   desc: string
+  domainDesc?: string
   archetype: string | null
   type: string
   frameType: string

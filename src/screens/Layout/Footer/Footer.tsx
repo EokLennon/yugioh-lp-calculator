@@ -1,4 +1,4 @@
-import { Box, IconButton, Text } from '@chakra-ui/react';
+import { Box, BoxProps, IconButton, Text } from '@chakra-ui/react';
 
 import { FaDiscord, FaYoutube } from 'react-icons/fa';
 
@@ -15,9 +15,9 @@ const IconButtonStyle = {
   color: 'current',
 }
 
-const Footer = () => {
+const Footer = (props: BoxProps) => {
   return (
-    <Box as='footer' {...BoxStyle}>
+    <Box as='footer' {...props} {...BoxStyle}>
       <Text fontSize='md' flexGrow={1}>
         &copy; 2024 Arturo Lennon.
       </Text>
