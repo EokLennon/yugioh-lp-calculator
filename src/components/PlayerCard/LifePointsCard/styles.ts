@@ -1,4 +1,4 @@
-import { selectPlayerCardColor } from "@store/game/slice";
+import { selectChroma, selectPlayerCardChromaKey, selectPlayerCardColor } from "@store/game/slice";
 import { useAppSelector } from "@store/hooks";
 
 import { 
@@ -14,26 +14,34 @@ import { IconType } from "react-icons";
 
 export const CardStyles = (lp: number, player: PlayerId): Partial<CardProps> => {
   const cardColor = useAppSelector(selectPlayerCardColor(player));
+  const showChromaKey = useAppSelector(selectChroma);
+  const showPlayerChromaKey = useAppSelector(selectPlayerCardChromaKey(player));
   const bg = useColorModeValue(`${cardColor}.300`, `${cardColor}.700`);
   const bgLost = useColorModeValue('red.700', 'red.900');
+  const textColor = showPlayerChromaKey ? '#fff' : undefined
 
   return {
+    boxShadow: (showChromaKey && showPlayerChromaKey) ? 'none' : undefined,
     borderRadius: 0,
-    bg: lp === 0 ? bgLost : bg
+    bg: showPlayerChromaKey ? '#00b140' : lp === 0 ? bgLost : bg,
+    textColor: textColor
   }
 }
 
 const Columns = `150px 1fr`;
 const ReverseColumns = `1fr 150px`;
-const Rows = '1fr 1fr 118px 30px';
+const Rows = '1fr 1fr 140px 30px';
 const TemplateAreas = `"name name"
                         "dmname dmname"
                         "image lp"
-                        "image calculator"`;
+                        "calculator calculator"`;
 const ReverseTemplateAreas = `"name name"
                               "dmname dmname"
                               "lp image"
-                              "calculator image"`;
+                              "calculator calculator"`;
+
+const chromaShadow = `2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000,
+                      0px 2px #000, 0px -2px #000, 0px -2px #000, 0px 2px #000`;
 
 export const GridStyles = (reversed: boolean): Partial<GridProps> => ({
   h: '100%',
@@ -45,38 +53,38 @@ export const GridStyles = (reversed: boolean): Partial<GridProps> => ({
 
 type NameGridStylesI = {
   GridItem: Partial<GridItemProps>
-  Box: (reversed: boolean) => Partial<BoxProps>
+  Box: (reversed: boolean, chromaKey: boolean) => Partial<BoxProps>
   Text: Partial<TextProps>
 }
 export const NameGridStyles: NameGridStylesI = {
   GridItem: { area: 'name' },
-  Box: (reversed) => {
+  Box: (reversed, chromaKey) => {
     const textShadow = useColorModeValue(undefined, `0 2px black`);
     return {
       px: '8px',
       textAlign: reversed ? 'right' : undefined,
-      textShadow: textShadow
+      textShadow: chromaKey ? chromaShadow : textShadow
     }
   },
   Text: {
     fontSize: '28px',
-    fontWeight: 700
+    fontWeight: 700,
   }
 }
 
 type DmNameGridStylesI = {
   GridItem: Partial<GridItemProps>
-  Box: (reversed: boolean) => Partial<BoxProps>
+  Box: (reversed: boolean, chromaKey: boolean) => Partial<BoxProps>
   Text: Partial<TextProps>
 }
 export const DmNameGridStyles: DmNameGridStylesI = {
   GridItem: { area: 'dmname' },
-  Box: (reversed) => {
+  Box: (reversed, chromaKey) => {
     const textShadow = useColorModeValue(undefined, `0 2px black`);
     return {
       px: '8px',
       textAlign: reversed ? 'right' : undefined,
-      textShadow: textShadow
+      textShadow: chromaKey ? chromaShadow : textShadow
     }
   },
   Text: {
@@ -123,7 +131,7 @@ export const ImageGridStyles: ImageGridStylesI = {
 type LifePointsGridStylesI = {
   GridItem: Partial<GridItemProps>
   Box: Partial<BoxProps>
-  Text: () => Partial<TextProps>
+  Text: (chromaKey: boolean) => Partial<TextProps>
 }
 export const LifePointsGridStyles: LifePointsGridStylesI = {
   GridItem: { area: 'lp' },
@@ -133,11 +141,11 @@ export const LifePointsGridStyles: LifePointsGridStylesI = {
     justifyContent: 'center',
     alignItems: 'center'
   },
-  Text: () => {
+  Text: (chromaKey) => {
     const textShadow = useColorModeValue(undefined, `0 2px black`);
     return {
       fontSize: '54px',
-      textShadow: textShadow
+      textShadow: chromaKey ? chromaShadow : textShadow
     }
   }
 }
@@ -145,7 +153,7 @@ export const LifePointsGridStyles: LifePointsGridStylesI = {
 type CalculatorGridStylesI = {
   GridItem: Partial<GridItemProps>
   Box: Partial<BoxProps>
-  Input: () => Partial<InputProps>
+  Input: (chromaKey: boolean) => Partial<InputProps>
   IconButton: Partial<IconButtonProps>
 }
 export const CalculatorGridStyles: CalculatorGridStylesI = {
@@ -154,14 +162,15 @@ export const CalculatorGridStyles: CalculatorGridStylesI = {
     display: 'flex',
     px: '8px'
   },
-  Input: () => {
+  Input: (chromaKey) => {
     const phColor = useColorModeValue('blackAlpha.700', 'whiteAlpha.700');
+
     return {
       variant: 'unstyled',
       // maxWidth: '80px',
       _placeholder: {
         opacity: 1,
-        color: phColor
+        color: chromaKey ? '#ffffff70' : phColor
       }
     }
   },

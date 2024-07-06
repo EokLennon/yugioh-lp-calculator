@@ -1,6 +1,7 @@
 import { Box, BoxProps, IconButton } from '@chakra-ui/react';
 import ColorModeSwitcher from '@components/ColorModeSwitcher/ColorModeSwitcher';
 
+
 import { ROUTES } from '@lib/helpers/constants';
 
 import { IconButtonStyle } from './styles';
@@ -11,7 +12,6 @@ type Props = Omit<BoxProps, 'aria-label'> & {
   pathname: string,
   goTo: (route: string) => void
 }
-
 
 const PageUtilities: React.FC<Props> = ({
   pathname,

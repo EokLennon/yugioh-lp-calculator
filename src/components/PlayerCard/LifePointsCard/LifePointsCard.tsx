@@ -12,11 +12,12 @@ import LifePoints from '@components/LifePoints/LifePoints';
 
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { 
+  selectPlayerCardChromaKey,
   selectPlayerCardReversed, selectPlayerDeckMaster, selectPlayerImageStatus, selectPlayerLifePoints, selectPlayerName, 
   setPlayerCurrentLifePoints, setPlayerPrevLifePoints
 } from '@store/game/slice';
 
-import { CalculatorGridStyles, CardStyles, ConfigSwitchStyles, DmNameGridStyles, GridStyles, ImageGridStyles, LifePointsGridStyles, NameGridStyles } from './styles';
+import { CalculatorGridStyles, CardStyles, DmNameGridStyles, GridStyles, ImageGridStyles, LifePointsGridStyles, NameGridStyles } from './styles';
 import { HiCog } from 'react-icons/hi';
 import { MdRestartAlt } from 'react-icons/md';
 import { PiPlus, PiMinus, PiImageSquare } from 'react-icons/pi';
@@ -43,6 +44,7 @@ const LifePointsCard = ({
   const deckMaster = useAppSelector(selectPlayerDeckMaster(playerNumber));
   const showImage = useAppSelector(selectPlayerImageStatus(playerNumber));
   const reversed = useAppSelector(selectPlayerCardReversed(playerNumber));
+  const chromaKey = useAppSelector(selectPlayerCardChromaKey(playerNumber));
   const { prevLifePoints, currentLifePoints } = useAppSelector((state) => selectPlayerLifePoints(state, playerNumber));
 
   const deckmasterName = useMemo(() => deckMaster?.name ?? '', [deckMaster]);
@@ -81,12 +83,12 @@ const LifePointsCard = ({
     >
       <Grid {...GridStyles(reversed)}>
         <GridItem {...NameGridStyles.GridItem}>
-          <Box {...NameGridStyles.Box(reversed)}>
+          <Box {...NameGridStyles.Box(reversed, chromaKey)}>
             <Text {...NameGridStyles.Text}>{playerName}</Text>
           </Box>
         </GridItem>
         <GridItem {...DmNameGridStyles.GridItem}>
-          <Box {...DmNameGridStyles.Box(reversed)}>
+          <Box {...DmNameGridStyles.Box(reversed, chromaKey)}>
             <Text {...DmNameGridStyles.Text}>
               {deckmasterName || 'Not selected'}
             </Text>
@@ -107,7 +109,7 @@ const LifePointsCard = ({
         <GridItem {...LifePointsGridStyles.GridItem}>
           <Box {...LifePointsGridStyles.Box}>
             <LifePoints 
-              {...LifePointsGridStyles.Text()}
+              {...LifePointsGridStyles.Text(chromaKey)}
               from={prevLifePoints}
               to={currentLifePoints}
             />
@@ -124,7 +126,7 @@ const LifePointsCard = ({
                 if (!numeric.test(e.key)) e.preventDefault();
               }}
               onChange={(e) => setLifePointsToOperate(e.target.value)}
-              {...CalculatorGridStyles.Input()}
+              {...CalculatorGridStyles.Input(chromaKey)}
             />
             <IconButton
               icon={<PiPlus />}
@@ -150,10 +152,17 @@ const LifePointsCard = ({
               onClick={onResetLifePoints}
               {...CalculatorGridStyles.IconButton}
             />
+            <IconButton
+              icon={<HiCog />}
+              title={`Edit Player information`}
+              aria-label={`Edit player ${playerNumber} information`}
+              onClick={() => onOpen(true)}
+              {...CalculatorGridStyles.IconButton}
+            />
           </Box>
         </GridItem>
       </Grid>
-      <Box {...ConfigSwitchStyles.Box(hovered, reversed)}>
+      {/* <Box {...ConfigSwitchStyles.Box(hovered, reversed)}>
         <IconButton
           icon={<HiCog />}
           title={`Edit Player information`}
@@ -161,7 +170,7 @@ const LifePointsCard = ({
           onClick={() => onOpen(true)}
           {...ConfigSwitchStyles.IconButton}
         />
-      </Box>
+      </Box> */}
     </Card>
   )
 }

@@ -8,12 +8,14 @@ export interface PlayerState {
   deckmaster?: ICard
   showDMImage: boolean
   color: string
-  reversed: boolean
+  reversed: boolean,
+  chromaKey: boolean
 }
 
 interface GameState {
   activeCard: 0|PlayerId
   numOfPlayers: number
+  chroma: boolean
   players: {
     1: PlayerState
     2: PlayerState
@@ -52,6 +54,10 @@ export interface PlayerCardColorPayload extends PlayerPayload {
 
 export interface PlayerCardReversedPayload extends PlayerPayload { 
   reversed: boolean 
+}
+
+export interface PlayerCardChromaKeyPayload extends PlayerPayload { 
+  chromaKey: boolean 
 }
 
 export default GameState

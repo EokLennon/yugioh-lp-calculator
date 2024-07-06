@@ -2,6 +2,7 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import GameState, { 
+  PlayerCardChromaKeyPayload,
   PlayerCardColorPayload, PlayerCardReversedPayload, 
   PlayerDeckMasterPayload, PlayerGameStatePayload, 
   PlayerImageStatusPayload, PlayerLifePointsPayload, 
@@ -13,6 +14,7 @@ import { PlayerId } from "@lib/interfaces/general";
 const initialState: GameState = {
   activeCard: 0,
   numOfPlayers: 1,
+  chroma: false,
   players: {
     1: {
       name: 'Player 1',
@@ -21,7 +23,8 @@ const initialState: GameState = {
       deckmaster: undefined,
       showDMImage: false,
       color: 'blue',
-      reversed: false
+      reversed: false,
+      chromaKey: false
     },
     2: {
       name: 'Player 2',
@@ -30,7 +33,8 @@ const initialState: GameState = {
       deckmaster: undefined,
       showDMImage: false,
       color: 'red',
-      reversed: true
+      reversed: true,
+      chromaKey: false
     },
     3: {
       name: 'Player 3',
@@ -39,7 +43,8 @@ const initialState: GameState = {
       deckmaster: undefined,
       showDMImage: false,
       color: 'green',
-      reversed: false
+      reversed: false,
+      chromaKey: false
     },
     4: {
       name: 'Player 4',
@@ -48,7 +53,8 @@ const initialState: GameState = {
       deckmaster: undefined,
       showDMImage: false,
       color: 'purple',
-      reversed: true
+      reversed: true,
+      chromaKey: false
     },
   }
 }
@@ -63,6 +69,9 @@ export const gameSlice = createSlice({
     },
     setNumOfPlayers: (state, action: PayloadAction<number>) => {
       state.numOfPlayers = action.payload
+    },
+    setChroma: (state, action: PayloadAction<boolean>) => {
+      state.chroma = action.payload
     },
     setPlayerGameState: (state, action: PayloadAction<PlayerGameStatePayload>) => {
       state.players[action.payload.player] = action.payload.state
@@ -87,6 +96,9 @@ export const gameSlice = createSlice({
     },
     setPlayerCardReversed: (state, action: PayloadAction<PlayerCardReversedPayload>) => {
       state.players[action.payload.player].reversed = action.payload.reversed
+    },
+    setPlayerCardChromaKey: (state, action: PayloadAction<PlayerCardChromaKeyPayload>) => {
+      state.players[action.payload.player].chromaKey = action.payload.chromaKey
     }
   }
 })
@@ -95,6 +107,7 @@ export const gameSlice = createSlice({
 export const {
   setActiveCard,
   setNumOfPlayers,
+  setChroma,
   setPlayerGameState,
   setPlayerName,
   setPlayerPrevLifePoints,
@@ -102,7 +115,8 @@ export const {
   setPlayerDeckMaster,
   setPlayerImageStatus,
   setPlayerCardColor,
-  setPlayerCardReversed
+  setPlayerCardReversed,
+  setPlayerCardChromaKey
 } = gameSlice.actions;
 
 // Selectors Aux
@@ -112,6 +126,7 @@ const selectPlayerNumber = (state: RootState, id: PlayerId) => id;
 // Selectors
 export const selectActiveCard = (state: RootState) => state.game.activeCard;
 export const selectNumOfPlayers = (state: RootState) => state.game.numOfPlayers;
+export const selectChroma = (state: RootState) => state.game.chroma;
 export const selectPlayerGameState = (id: PlayerId) => (state: RootState) => state.game.players[id];
 export const selectPlayerName = (id: PlayerId) => (state: RootState) => state.game.players[id].name;
 export const selectPlayerDeckMaster = (id: PlayerId) => (state: RootState) => state.game.players[id].deckmaster;
@@ -125,5 +140,6 @@ export const selectPlayerLifePoints = createSelector(
   })
 )
 export const selectPlayerCardReversed = (id: PlayerId) => (state: RootState) => state.game.players[id].reversed;
+export const selectPlayerCardChromaKey = (id: PlayerId) => (state: RootState) => state.game.players[id].chromaKey;
 
 export default gameSlice.reducer;
