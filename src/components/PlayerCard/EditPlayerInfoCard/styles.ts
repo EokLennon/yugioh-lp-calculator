@@ -1,8 +1,14 @@
-import { ButtonGroupProps, ButtonProps, IconButtonProps, InputGroupProps, InputProps, InputRightElementProps, StackProps } from "@chakra-ui/react";
+import { ButtonGroupProps, ButtonProps, CardBodyProps, IconButtonProps, InputGroupProps, InputProps, InputRightElementProps, SelectProps, StackProps } from "@chakra-ui/react";
+
+export const CardBodyStyle: Partial<CardBodyProps> = {
+  p: 3,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between'
+}
 
 export const GeneralStackStyle: Partial<StackProps> = {
-  p: 3,
-  spacing: 2
+  spacing: 2,
 }
 
 type NameConfigStylesI = { InputGroup: Partial<InputGroupProps> }
@@ -24,6 +30,28 @@ export const DeckMasterConfigStyles: DeckMasterConfigStylesI = {
   Button: { 
     h: '1.4rem', 
     size: 'xs' 
+  }
+}
+
+type ColorConfigStylesI = {
+  InputGroup: Partial<InputGroupProps> 
+  Select: Partial<SelectProps>
+  InputRightElement: Partial<InputRightElementProps>
+  Button: (chromaKey: boolean) => Partial<ButtonProps>
+}
+export const ColorConfigStyles: ColorConfigStylesI = { 
+  InputGroup: { size: 'sm' },
+  InputRightElement: { 
+    w: '3.5rem',
+    marginRight: '2rem'
+  },
+  Select: {},
+  Button: (chromaKey) => {
+    return { 
+      h: '1.4rem', 
+      size: 'xs',
+      colorScheme: chromaKey ? 'green' : undefined
+    }
   }
 }
 

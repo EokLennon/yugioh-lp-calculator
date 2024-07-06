@@ -12,7 +12,7 @@ type PlayerCardProps = Omit<ReactFlipCardProps, 'children'> & {
   show?: boolean
 }
 
-const Height = '220px';
+const Height = '242px';
 
 const PlayerCard = ({ playerNumber, show, ...props }: PlayerCardProps) => {
   const [flipped, setFlipped] = useState(false);

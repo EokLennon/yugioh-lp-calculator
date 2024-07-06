@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { selectActiveCard, selectNumOfPlayers, setActiveCard, setPlayerDeckMaster } from '@store/game/slice';
+import { selectActiveCard, selectChroma, selectNumOfPlayers, setActiveCard, setPlayerDeckMaster } from '@store/game/slice';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDeckMasters } from '@api/cards';
@@ -25,6 +25,7 @@ const GameCalculator = (props: BoxProps) => {
   const dispatch = useAppDispatch();
   const players = useAppSelector(selectNumOfPlayers);
   const activeCard = useAppSelector(selectActiveCard);
+  const showChromaKey = useAppSelector(selectChroma);
   
   const [search, setSearch] = useState('');
   const [selectedDeckMaster, setSelectedDeckMaster] = useState<ICard>();
@@ -67,6 +68,7 @@ const GameCalculator = (props: BoxProps) => {
     <Box 
       as='main'
       {...props}
+      bg={showChromaKey ? '#00b140' : undefined}
     >
       <SimpleGrid columns={[1, null, 2]} spacing='1em'>
         {[...Array(4)].map((i, k) => 

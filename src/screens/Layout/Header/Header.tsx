@@ -4,8 +4,9 @@ import { ROUTES } from '@lib/helpers/constants';
 import { selectNumOfPlayers, setNumOfPlayers } from '@store/game/slice';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Box, BoxProps, HStack } from '@chakra-ui/react';
 import NumberOfPlayersSwitcher from '@components/NumberOfPlayersSwitcher/NumberOfPlayersSwitcher';
+import ChromaSwitcher from '@components/ChromaSwitcher/ChromaSwitcher';
 import PageUtilities from '@components/PageUtilities/PageUtilities';
 
 const BoxStyle = {
@@ -24,10 +25,13 @@ const Header = (props: BoxProps) => {
   return (
     <Box as='header' {...BoxStyle} {...props}>
       {pathname === ROUTES.CALCULATOR 
-        ? <NumberOfPlayersSwitcher
-            players={players}
-            onSetPlayers={(p) => dispatch(setNumOfPlayers(p))}
-          />
+        ? <HStack spacing={0}>
+            <NumberOfPlayersSwitcher
+              players={players}
+              onSetPlayers={(p) => dispatch(setNumOfPlayers(p))}
+            />
+            <ChromaSwitcher />
+          </HStack>
         : <div />
       }
       <PageUtilities 
