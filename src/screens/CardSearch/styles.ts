@@ -1,8 +1,9 @@
-import { BoxProps, HeadingProps, ImageProps, SimpleGridProps, SpinnerProps, useColorModeValue } from "@chakra-ui/react";
+import { BoxProps, GridProps, HeadingProps, ImageProps, SimpleGridProps, SpinnerProps, useColorModeValue } from "@chakra-ui/react";
 
 type SearchStyleI = {
   Spinner: Partial<SpinnerProps>
   ResultsBox: () => Partial<BoxProps>
+  ResultsBoxMd: () => Partial<BoxProps>
 }
 export const SearchStyle: SearchStyleI = {
   Spinner: {
@@ -21,6 +22,17 @@ export const SearchStyle: SearchStyleI = {
       bg: bg,
       color: 'white',
       zIndex: 10
+    }
+  },
+  ResultsBoxMd: () => {
+    return {
+      gap: '10px',
+      width: '100%',
+      py: '10px',
+      color: 'white',
+      height: 'calc(100vh - 40px - 52px - 56px)',
+      overflowY: 'auto',
+      overflowX: 'hidden'
     }
   }
 }
@@ -42,4 +54,12 @@ export const CardViewStyle: CardViewStyleI = {
     mb: '1rem',
     size: 'md'
   }
+}
+
+export const GridStyles: Partial<GridProps> = {
+  h: '100%',
+  templateAreas: '"search card"',
+  templateColumns: '350px 1fr',
+  templateRows: '1fr',
+  columnGap: '20px',
 }
