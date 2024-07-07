@@ -8,10 +8,10 @@ import CardSearching from '@screens/CardSearch/CardSearch';
 
 const App = () => (
   <Routes>
-    <Route path={ROUTES.ROOT} element={<Navigate to={ROUTES.CALCULATOR} replace />} />
+    <Route path={ROUTES.ROOT.path} element={<Navigate to={ROUTES.CALCULATOR.path} replace />} />
     <Route element={<ScreenLayout />}>
-      <Route path={ROUTES.CALCULATOR} element={<GameCalculator flexGrow={1} />} />
-      <Route path={ROUTES.CARD_VIEWER} element={<CardSearching flexGrow={1} />} />
+      <Route path={ROUTES.CALCULATOR.path} element={<GameCalculator flexGrow={1} />} />
+      <Route path={ROUTES.CARD_VIEWER.path} element={<CardSearching flexGrow={1} />} />
     </Route>
   </Routes>
 )

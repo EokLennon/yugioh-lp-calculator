@@ -24,7 +24,7 @@ const Header = (props: BoxProps) => {
 
   return (
     <Box as='header' {...BoxStyle} {...props}>
-      {pathname === ROUTES.CALCULATOR 
+      {pathname === ROUTES.CALCULATOR.path 
         ? <HStack spacing={0}>
             <NumberOfPlayersSwitcher
               players={players}

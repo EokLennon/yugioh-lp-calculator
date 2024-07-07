@@ -1,7 +1,7 @@
 export const ROUTES = {
-  ROOT: '/',
-  CALCULATOR: '/calculator',
-  CARD_VIEWER: '/card_viewer',
+  ROOT: { path: '/', title: 'Home' },
+  CALCULATOR: { path: '/calculator', title: 'Calculator' },
+  CARD_VIEWER: { path: '/card_viewer', title: 'Card Search' },
 }
 
  

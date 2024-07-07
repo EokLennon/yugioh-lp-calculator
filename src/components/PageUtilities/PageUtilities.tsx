@@ -21,15 +21,15 @@ const PageUtilities: React.FC<Props> = ({
   return (
     <Box display='flex' {...props}>
       <IconButton
-        onClick={() => goTo(ROUTES.CALCULATOR)}
-        icon={pathname === ROUTES.CALCULATOR ? <PiCalculatorFill /> : <PiCalculator />}
+        onClick={() => goTo(ROUTES.CALCULATOR.path)}
+        icon={pathname === ROUTES.CALCULATOR.path ? <PiCalculatorFill /> : <PiCalculator />}
         title='Go to LP Calculator'
         aria-label={`Switch to LP Calculator`}
         {...IconButtonStyle}
       />
       <IconButton
-        onClick={() => goTo(ROUTES.CARD_VIEWER)}
-        icon={pathname === ROUTES.CARD_VIEWER ? <TbListSearch /> : <TbSearch />}
+        onClick={() => goTo(ROUTES.CARD_VIEWER.path)}
+        icon={pathname === ROUTES.CARD_VIEWER.path ? <TbListSearch /> : <TbSearch />}
         title='Go to Search section'
         aria-label={`Switch to Search section`}
         {...IconButtonStyle}
